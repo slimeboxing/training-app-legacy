@@ -114,7 +114,16 @@ function weeklyPrint(){
  }).join('');
  const all=[].concat.apply([],Object.values(wk).map(p=>[p.normal||'',p.rain||''])).join('、');
  const sets='ABCD'.split('').map(k=>`<div class="detail"><h3>筋トレ${k} <small>${{A:'下半身・体幹',B:'上半身・体幹',C:'下半身・体幹',D:'全身'}[k]}</small></h3>${strength[k].map(([name,reps,n])=>`<div class="lift"><span class="tinybox"></span><span class="liftname">${esc(name)}</span><span>${esc(reps)}</span><span class="setboxes">${Array.from({length:n},()=>'<i></i>').join('')}</span></div>`).join('')}</div>`).join('');
- const maxR=(reg)=>Math.max(0,...[...all.matchAll(reg)].map(m=>+m[1]));
+ const maxR=(reg)=>{
+  var flags=reg.flags||'gi';
+  if(flags.indexOf('g')<0)flags+='g';
+  var rx=new RegExp(reg.source,flags),m,max=0;
+  while((m=rx.exec(all))!==null){
+    max=Math.max(max,Number(m[1])||0);
+    if(m[0]==='')rx.lastIndex++;
+  }
+  return max;
+ };
  const shadowR=Math.min(12,maxR(/(?:グローブ)?シャドー\s*(\d+)\s*R/gi))||12;
  const bagR=Math.min(6,maxR(/(?:サンドバッグ|バッグ)\s*(\d+)\s*R/gi))||6;
  const roundRows=(arr,n)=>Array.from({length:n},(_,i)=>`<div class="rline"><b>${i+1}R</b><span class="tinybox"></span><span>${esc(arr[i%arr.length])}</span></div>`).join('');
@@ -181,10 +190,19 @@ window.addEventListener('load',fitPrintPreview);
 window.addEventListener('resize',fitPrintPreview);
 setTimeout(fitPrintPreview,150);
 \/script></body></html>`;
- if(standaloneMode()){showStandalonePrint(html,'weekly');return}
+ if(standaloneMode() || /OS 12[_\.]/.test(navigator.userAgent)){showStandalonePrint(html,'weekly');return}
  const w=window.open('','_blank');if(!w){alert('ポップアップがブロックされたで');return}w.document.open();w.document.write(html);w.document.close();
 }
-$('printWeekly').onclick=weeklyPrint;
+$('printWeekly').onclick=function(){
+ try{weeklyPrint()}
+ catch(e){
+  var msg='週間メニューの生成でエラー: '+(e&&e.message?e.message:String(e));
+  alert(msg);
+  var p=document.getElementById('legacyWeeklyError');
+  if(!p){p=document.createElement('p');p.id='legacyWeeklyError';p.style.cssText='color:#b91c1c;font-weight:bold;white-space:pre-wrap';$('printWeekly').parentNode.appendChild(p)}
+  p.textContent=msg;
+ }
+};
 $('reportMonth').value=dateStr(new Date()).slice(0,7);
 $('printMonthly').onclick=()=>{
  const returnUrl=location.href;
