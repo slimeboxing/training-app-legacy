@@ -9,9 +9,9 @@ function legacyReadFile(file){return new Promise(function(resolve,reject){var r=
 </script></head><body><header>🥊 TRAINING LOG</header><nav><button data-tab="today" class="active">TODAY</button><button data-tab="week">WEEKLY</button><button data-tab="timer">TIMER</button><button data-tab="memo">MEMO</button><button data-tab="stats">STATS</button></nav><main>
 <section id="today"><div class="panel"><h2 id="dateTitle"></h2><div class="days" id="days"></div><div class="buttons"><button class="soft" id="sunBtn">☀️ 晴れ</button><button class="soft" id="rainBtn">🌧️ 雨</button><button class="soft" id="offBtn">🛌 OFF</button></div><div id="todayTasks"></div><div class="progress"><div id="bar"></div></div><p class="muted" id="count"></p></div><div class="panel"><h2>📝 トレーニング記録</h2><p class="muted" id="logDate"></p><div class="grid"><div><label>RUN距離 km</label><input id="runKm" type="number" step="0.01"></div><div><label>体重 kg</label><input id="weight" type="number" step="0.1"></div><div><label>RUN消費 kcal</label><div class="metric" id="runKcal">0</div></div><div><label>その他運動 kcal</label><input id="otherKcal" type="number" step="1"></div></div><label>メモ</label><textarea id="memo" placeholder="今日の練習メモ"></textarea><div class="buttons"><button class="primary" id="saveLog">記録を保存</button></div><p class="note">RUN消費 = 体重 × 距離 × 1.036。その他運動はWatch累計の差分などを入力。</p></div>
 </section>
-<section id="week" class="hidden"><div class="panel"><h2>📋 GPTの週間メニューを読込</h2><p class="muted">月〜日の予定を1行ずつ入力。「通常」「雨天」「実績」も書けるで！ 筋トレA〜Dは内蔵済み。</p><textarea id="menuText" placeholder="月曜：筋トレA、グローブシャドー6R、RUN5km&#10;火曜：パーソナル&#10;水曜：筋トレB、サンドバッグ6R"></textarea><div class="buttons"><button class="primary" id="importBtn">この週に読み込む</button><button class="soft" id="sampleBtn">入力例</button></div><p class="note">読込すると選択中の週の予定が更新される。過去の練習記録は残る。</p></div><div class="panel"><h2>📅 週間メニュー</h2><div class="buttons"><button class="soft" id="prevWeek">← 前週</button><button class="soft" id="nextWeek">次週 →</button></div><span class="pill" id="weekRange"></span><div id="weekRows"></div><div class="buttons"><button class="primary" id="printWeekly">📄 週間メニューを印刷 / PDF保存</button></div></div></section>
+<section id="week" class="hidden"><div class="panel"><h2>📋 GPTの週間メニューを読込</h2><p class="muted">月〜日の予定を1行ずつ入力。「通常」「雨天」「実績」も書けるで！ 筋トレA〜Dは内蔵済み。</p><textarea id="menuText" placeholder="月曜：筋トレA、グローブシャドー6R、RUN5km&#10;火曜：パーソナル&#10;水曜：筋トレB、サンドバッグ6R"></textarea><div class="buttons"><button class="primary" id="importBtn">この週に読み込む</button><button class="soft" id="sampleBtn">入力例</button></div><p class="note">読込すると選択中の週の予定が更新される。過去の練習記録は残る。</p></div><div class="panel"><h2>📅 週間メニュー</h2><div class="buttons"><button class="soft" id="prevWeek">← 前週</button><button class="soft" id="nextWeek">次週 →</button></div><span class="pill" id="weekRange"></span><div id="weekRows"></div><div class="buttons"><button class="primary" id="printWeekly">📄 週間メニューを表示・印刷</button></div></div></section>
 <section id="timer" class="hidden"><div class="panel"><h2>⏱️ ラウンドタイマー</h2><p class="muted">開始・終了は実録のボクシングゴング、終了10秒前は拍子木2回。指定のゴング音をアプリに内蔵済み！</p><label>ラウンド（秒）</label><input id="roundSeconds" type="number" min="1" value="120"><label>ラウンド数</label><input id="roundCount" type="number" min="1" max="99" value="6"><p class="muted" id="roundProgress">1 / 6 R</p><label>休憩（秒）</label><input id="restSeconds" type="number" min="0" value="30"><div class="timer" id="clock">02:00</div><p class="muted" id="timerPhase">ラウンド</p><div class="buttons"><button class="primary" id="startTimer">スタート</button><button class="soft" id="pauseTimer">一時停止</button><button class="soft" id="resetTimer">リセット</button><button class="soft" id="testSound">🔔 音テスト</button></div></div></section>
-<section id="memo" class="hidden"><div class="panel"><h2>📝 TRAINING MEMO</h2><p class="muted">日付を選んで過去の練習メモを読んだり、編集できるで！</p><div id="memoList"></div></div></section><section id="stats" class="hidden"><div class="panel"><h2>📊 集計</h2><div class="grid"><div><div class="muted">記録日数</div><div class="metric" id="statDays">0</div></div><div><div class="muted">RUN総距離</div><div class="metric" id="statKm">0 km</div></div><div><div class="muted">運動消費合計</div><div class="metric" id="statKcal">0 kcal</div></div><div><div class="muted">完了チェック数</div><div class="metric" id="statChecks">0</div></div></div></div><div class="panel"><h3>📄 月間レポート（A4）</h3><label>対象月</label><input id="reportMonth" type="month"><p class="muted">記録と完了チェックから月別に集計。印刷画面からPDF保存もできるで！</p><button class="primary" id="printMonthly">月間レポートを印刷 / PDF保存</button></div><div class="panel"><h3>💾 データのバックアップ</h3><div class="buttons"><button class="primary" id="exportBtn">JSONを書き出す</button><label class="soft" style="cursor:pointer;margin:0">JSONを読み込む<input id="restoreFile" type="file" accept="application/json,.json" style="display:none"></label></div><p class="muted">記録はこの端末のブラウザに保存。機種変更前にはバックアップ推奨。</p></div></section>
+<section id="memo" class="hidden"><div class="panel"><h2>📝 TRAINING MEMO</h2><p class="muted">日付を選んで過去の練習メモを読んだり、編集できるで！</p><div id="memoList"></div></div></section><section id="stats" class="hidden"><div class="panel"><h2>📊 集計</h2><div class="grid"><div><div class="muted">記録日数</div><div class="metric" id="statDays">0</div></div><div><div class="muted">RUN総距離</div><div class="metric" id="statKm">0 km</div></div><div><div class="muted">運動消費合計</div><div class="metric" id="statKcal">0 kcal</div></div><div><div class="muted">完了チェック数</div><div class="metric" id="statChecks">0</div></div></div></div><div class="panel"><h3>📄 月間レポート（A4）</h3><label>対象月</label><input id="reportMonth" type="month"><p class="muted">記録と完了チェックから月別に集計。印刷画面からPDF保存もできるで！</p><button class="primary" id="printMonthly">月間レポートを表示・印刷</button></div><div class="panel"><h3>💾 データのバックアップ</h3><div class="buttons"><button class="primary" id="exportBtn">JSONを書き出す</button><label class="soft" style="cursor:pointer;margin:0">JSONを読み込む<input id="restoreFile" type="file" accept="application/json,.json" style="display:none"></label></div><p class="muted">記録はこの端末のブラウザに保存。機種変更前にはバックアップ推奨。</p></div></section>
 </main><footer>TRAINING LOG 🥊</footer><script>
 const KEY='nao-training-v3';let db;try{db=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){db={}}db.weeks=db.weeks||{};db.checks=db.checks||{};db.weather=db.weather||{};db.logs=db.logs||{};db.off=db.off||{};const save=()=>localStorage.setItem(KEY,JSON.stringify(db));const pad=n=>String(n).padStart(2,'0');const dateStr=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;const addDays=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};const monday=d=>{let x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-(x.getDay()+6)%7);return x};const today=new Date();let weekStart=monday(today),selected=dateStr(today);const days=['月','火','水','木','金','土','日'];const $=id=>document.getElementById(id);const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const strength={A:[['ゴブレットスクワット','15回',3],['ブルガリアンスクワット','左右10回',3],['KBデッドリフト','20回',6],['ヒップリフト','20回',3],['リバースクランチ','15回',3]],B:[['膝つき腕立て','12回',3],['ワンハンドKBロウ','左右12回',3],['ショルダープレス','20回',3],['バイシクルクランチ','左右15回',3],['プランク','60秒',3]],C:[['KBデッドリフト','20回',6],['ブルガリアンスクワット','左右10回',3],['KBスイング','20回',6],['バイシクルクランチ','左右15回',3],['プランク','60秒',3]],D:[['KBスイング','20回',6],['KBデッドリフト','20回',6],['膝つき腕立て','12回',3],['ゴブレットスクワット','15回',3],['リバースクランチ','15回',3]]};
@@ -80,58 +80,26 @@ $('testSound').onclick=()=>{unlockAudio();gong();setTimeout(clappers,2200)};
 
 function standaloneMode(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
 function showStandalonePrint(html,kind){
- // Keep the same WebKit window. iOS installed web apps often block printing in popup windows.
- const pdfName=kind==='weekly'?'週間トレーニング.pdf':'月間トレーニングレポート.pdf';
+ // iOS 12 Safari does not support the modern PDF share pipeline reliably.
+ // Use the browser's native print dialog instead, with a visible manual fallback.
+ const helper=`<div class="print-help" id="legacyPrintHelp" style="display:block;margin:8px 12px;padding:12px;background:#eef4ff;color:#153153;border-radius:8px;line-height:1.6;font-size:14px">旧iPad版：青い印刷ボタンで印刷画面を開きます。反応しない場合はSafariでこのページを開き、共有（□↑）→「プリント」を選んでください。PDFにする場合は印刷プレビューを拡大して共有できます。</div>`;
+ html=html.replace('</nav>', '</nav>'+helper);
+ // The original weekly sheet contains a hidden print-help node, leave it untouched.
+ html=html.replace(/onclick="window.print\(\)"/g,'onclick="legacyNativePrint()"');
  const script=`<script>
- const pdfFileName=${JSON.stringify(pdfName)};
- function returnToTraining(){location.reload()}
- function loadPdfEngine(){return new Promise((resolve,reject)=>{
-   if(window.html2pdf){resolve();return}
-   const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-   s.onload=resolve;s.onerror=()=>reject(new Error('PDF変換ライブラリを読み込めませんでした。ネット接続を確認してください。'));
-   document.head.appendChild(s);
- })}
- async function savePdfInApp(){
-  const btn=document.getElementById('savePdf')||document.getElementById('reportPdfButton');
-  const original=btn.textContent;btn.disabled=true;btn.textContent='PDF作成中…';
-  try{
-   await loadPdfEngine();
-   const source=document.querySelector('.sheet')||document.getElementById('reportContent');
-   if(!source)throw new Error('印刷内容が見つかりません');
-   let blob;
-   if(source.classList.contains('sheet')){
-     // Render the fixed A4 sheet to a single image, then place it on one PDF page.
-     // Avoid html2pdf's page-break/clone logic, which fails on some iOS standalone WebViews.
-     const canvas=await html2canvas(source,{scale:2,backgroundColor:'#ffffff',useCORS:true,scrollY:0,windowWidth:Math.max(800,source.scrollWidth),onclone:(doc)=>{
-       const el=doc.querySelector('.sheet');if(el){el.style.transform='none';el.style.margin='0';}
-     }});
-     const pdf=new jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-     pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',10,10,190,259);
-     blob=pdf.output('blob');
-   }else{
-     const opts={margin:12,filename:pdfFileName,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}};
-     blob=await html2pdf().set(opts).from(source).outputPdf('blob');
-   }
-   const file=new File([blob],pdfFileName,{type:'application/pdf'});
-   if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){
-     await navigator.share({files:[file],title:pdfFileName});
-   }else{
-     const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=pdfFileName;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
-   }
-  }catch(e){if(e.name!=='AbortError')alert('PDF作成ができませんでした：'+e.message)}
-  finally{btn.disabled=false;btn.textContent=original}
+ function legacyNativePrint(){
+   var status=document.getElementById('legacyPrintStatus');
+   if(status)status.textContent='印刷画面を呼び出しました。何も起きない場合はSafariの共有メニューからプリントしてください。';
+   try{window.print()}catch(e){if(status)status.textContent='このiPadではアプリ内印刷が使えません。Safariで開いて共有 → プリントを選んでください。'}
  }
- window.addEventListener('DOMContentLoaded',()=>{
-  const back=document.querySelector('.back-btn,.back-link');if(back){back.href='#';back.onclick=e=>{e.preventDefault();returnToTraining()}}
-  const print=document.getElementById('savePdf')||document.getElementById('reportPdfButton');
-  if(print){print.onclick=savePdfInApp;print.textContent='📄 PDF作成・共有';}
+ function legacyReturn(){location.reload()}
+ window.addEventListener('DOMContentLoaded',function(){
+   var back=document.querySelector('.back-btn,.back-link');
+   if(back){back.setAttribute('href','#');back.onclick=function(e){e.preventDefault();legacyReturn()}}
+   var nav=document.querySelector('.print-nav,.report-nav');
+   if(nav){var n=document.createElement('div');n.id='legacyPrintStatus';n.style.cssText='font-size:12px;color:#345;padding:6px 12px';nav.parentNode.insertBefore(n,nav.nextSibling)}
  });
-<\/script>`;
- if(kind==='monthly'){
-   html=html.replace('<h1>🥊 TRAINING LOG', '<div id="reportContent"><h1>🥊 TRAINING LOG');
-   html=html.replace('</body></html>','</div></body></html>');
-   html=html.replace('<button onclick="window.print()">','<button id="reportPdfButton" type="button">');
- }
+ <\/script>`;
  html=html.replace('</body></html>',script+'</body></html>');
  document.open();document.write(html);document.close();
 }
