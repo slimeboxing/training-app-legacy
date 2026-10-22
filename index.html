@@ -89,8 +89,22 @@ function showStandalonePrint(html,kind){
  const script=`<script>
  function legacyNativePrint(){
    var status=document.getElementById('legacyPrintStatus');
-   if(status)status.textContent='印刷画面を呼び出しました。何も起きない場合はSafariの共有メニューからプリントしてください。';
-   try{window.print()}catch(e){if(status)status.textContent='このiPadではアプリ内印刷が使えません。Safariで開いて共有 → プリントを選んでください。'}
+   if(status)status.textContent='印刷を呼び出しています…';
+   // The weekly sheet is screen-scaled using transform. Older WebKit may fail
+   // to print a transformed fixed-size element. Restore its native size first.
+   var sheet=document.querySelector('.sheet');
+   var frame=document.querySelector('.sheet-frame');
+   if(sheet){sheet.style.transform='none';sheet.style.transformOrigin='top left';}
+   if(frame){frame.style.width='190mm';frame.style.height='259mm';frame.style.maxWidth='none';}
+   // Force a synchronous layout flush while still inside the user gesture.
+   if(sheet){void sheet.offsetHeight;}
+   try{
+     window.print();
+     if(status)status.textContent='印刷画面が出ない場合は、このiPadのSafariから共有 → プリントを選んでください。';
+   }catch(e){
+     if(status)status.textContent='印刷エラー：'+String(e.message||e);
+   }
+   if(typeof fitPrintPreview==='function')fitPrintPreview();
  }
  function legacyReturn(){location.reload()}
  window.addEventListener('DOMContentLoaded',function(){
